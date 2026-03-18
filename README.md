@@ -1,1 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Can I Eat Tree?</title>
+  <style>
+    :root{
+      --bg1:#0ea5e9;
+      --bg2:#22c55e;
+      --card:rgba(255,255,255,0.92);
+      --ink:#0f172a;
+      --muted:#475569;
+      --border:rgba(15, 23, 42, 0.12);
+      --shadow: 0 16px 40px rgba(0,0,0,0.15);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background: radial-gradient(1200px 800px at 20% 15%, rgba(255,255,255,0.35), transparent 55%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .wrap{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.2fr 0.9fr;
+      gap:18px;
+    }
+
+    @media (max-width: 900px){
+      .wrap{grid-template-columns: 1fr;}
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .header{
+      padding:18px 18px 10px 18px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0));
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:-0.02em;
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.3;
+    }
+
+    .stats{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.7);
+      font-weight:700;
+      font-size:12.5px;
+      white-space:nowrap;
+    }
+
+    .pill span{font-weight:800;}
+
+    .main{
+      padding:18px;
+      display:grid;
+      gap:14px;
+    }
+
+    .arena{
+      border-radius:16px;
+      border:1px solid var(--border);
+      background: radial-gradient(800px 320px at 50% 35%, rgba(34,197,94,0.20), rgba(255,255,255,0.6));
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      min-height:240px;
+    }
+
+    .scene{
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      gap:18px;
+      min-height:170px;
+      padding:12px 6px 8px 6px;
+    }
+
+    .guy{
+      font-size:84px;
+      transform-origin: 50% 80%;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.12));
+    }
+
+    .tree{
+      font-size:96px;
+      transform-origin: 50% 85%;
+      filter: drop-shadow(0 12px 18px rgba(0,0,0,0.14));
+      transition: transform 120ms ease;
+    }
+
+    .shake{ animation: shake 160ms ease; }
+    @keyframes shake{
+      0%{transform: translateX(0) rotate(0deg)}
+      25%{transform: translateX(-3px) rotate(-2deg)}
+      50%{transform: translateX(3px) rotate(2deg)}
+      75%{transform: translateX(-2px) rotate(-1deg)}
+      100%{transform: translateX(0) rotate(0deg)}
+    }
+
+    .chomp{ animation: chomp 220ms ease; }
+    @keyframes chomp{
+      0%{transform: rotate(0deg) translateY(0)}
+      30%{transform: rotate(-7deg) translateY(2px)}
+      70%{transform: rotate(5deg) translateY(-2px)}
+      100%{transform: rotate(0deg) translateY(0)}
+    }
+
+    .toolbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+      background: #0f172a;
+      color:#fff;
+      box-shadow: 0 10px 18px rgba(15,23,42,0.25);
+      transition: transform 90ms ease, opacity 120ms ease;
+      user-select:none;
+      touch-action: manipulation;
+    }
+
+    .btn:active{ transform: translateY(1px) scale(0.99); }
+    .btn.secondary{
+      background: rgba(15,23,42,0.08);
+      color: var(--ink);
+      box-shadow:none;
+      border:1px solid var(--border);
+      font-weight:800;
+    }
+
+    .hint{
+      text-align:center;
+      font-size:12.5px;
+      color:var(--muted);
+      margin:0;
+    }
+
+    .barWrap{
+      display:grid;
+      gap:6px;
+      margin-top:10px;
+    }
+
+    .barTop{
+      display:flex;
+      justify-content:space-between;
+      font-size:12.5px;
+      color:var(--muted);
+    }
+
+    .bar{
+      height:18px;
+      border-radius:999px;
+      overflow:hidden;
+      background: rgba(15,23,42,0.10);
+      border:1px solid var(--border);
+    }
+
+    .fill{
+      height:100%;
+      width:100%;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      transition: width 120ms linear;
+    }
+
+    .arenaFooter{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .smallStat{
+      font-size:12.5px;
+      color:var(--muted);
+    }
+
+    .smallStat b{color:var(--ink)}
+
+    /* Upgrades panel */
+    .right{
+      display:grid;
+      gap:18px;
+      align-content:start;
+    }
+
+    .section{
+      padding:14px;
+      display:grid;
+      gap:10px;
+    }
+
+    .section h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:-0.01em;
+    }
+
+    .grid{
+      display:grid;
+      gap:10px;
+    }
+
+    .upgrade{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      align-items:center;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.65);
+    }
+
+    .uLeft{
+      display:grid;
+      gap:2px;
+      text-align:left;
+    }
+
+    .uName{
+      font-weight:900;
+      font-size:13.5px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .uDesc{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.25;
+    }
+
+    .uMeta{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .buy{
+      border:none;
+      border-radius:14px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:900;
+      background: #111827;
+      color:#fff;
+      min-width:118px;
+    }
+
+    .buy[disabled]{
+      opacity:0.45;
+      cursor:not-allowed;
+    }
+
+    /* Toasts */
+    .toasts{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      display:grid;
+      gap:10px;
+      z-index:50;
+    }
+
+    .toast{
+      background: rgba(15,23,42,0.92);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.12);
+      padding:10px 12px;
+      border-radius:14px;
+      box-shadow: 0 16px 30px rgba(0,0,0,0.25);
+      font-size:13px;
+      max-width:320px;
+      animation: pop 160ms ease;
+    }
+    @keyframes pop{
+      from{ transform: translateY(8px); opacity:0; }
+      to{ transform: translateY(0); opacity:1; }
+    }
+
+    /* Thunder overlay */
+    .storm{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 140ms ease;
+    }
+
+    .storm.on{ opacity:1; }
+
+    .flash{
+      position:absolute;
+      inset:0;
+      background: rgba(255,255,255,0.92);
+      mix-blend-mode: overlay;
+      animation: flash 420ms ease;
+    }
+    @keyframes flash{
+      0%{opacity:0}
+      15%{opacity:1}
+      35%{opacity:0.15}
+      55%{opacity:0.75}
+      100%{opacity:0}
+    }
+
+    .bolt{
+      position:absolute;
+      left:50%;
+      top:40px;
+      transform: translateX(-50%);
+      font-size:64px;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
+      animation: bolt 520ms ease;
+    }
+    @keyframes bolt{
+      0%{ transform: translateX(-50%) translateY(-20px); opacity:0; }
+      20%{ opacity:1; }
+      60%{ opacity:1; transform: translateX(-50%) translateY(0px) scale(1.05); }
+      100%{ opacity:0; transform: translateX(-50%) translateY(10px) scale(0.98); }
+    }
+
+    .footerNote{
+      padding:12px 14px;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      font-size:12.5px;
+      background: rgba(255,255,255,0.55);
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-weight:800;
+      background: rgba(15,23,42,0.08);
+      border:1px solid var(--border);
+      padding:2px 6px;
+      border-radius:8px;
+      color: var(--ink);
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+
+    <!-- LEFT: Game -->
+    <div class="card">
+      <div class="header">
+        <div class="title">
+          <h1>🌳 Can I Eat Tree?</h1>
+          <p class="sub">Hold <span class="kbd">Bite</span> to chomp slowly. Buy upgrades to eat faster. Rare storms can burn the tree for bonus points.</p>
+        </div>
+        <div class="stats">
+          <div class="pill">Points: <span id="points">0</span></div>
+          <div class="pill">DPS: <span id="dps">0.0</span>%/s</div>
+          <div class="pill">Bite: <span id="bps">0.0</span>%/s</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="arena" id="arena">
+          <div class="storm" id="storm">
+            <div class="flash"></div>
+            <div class="bolt">⚡</div>
+          </div>
+
+          <div class="scene">
+            <div class="guy" id="guy">🧍</div>
+            <div class="tree" id="tree">🌳</div>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn" id="biteBtn">😬 Bite</button>
+            <button class="btn secondary" id="resetBtn" title="Reset your run">↺ Reset</button>
+          </div>
+
+          <p class="hint">Tip: You can also hold <span class="kbd">Space</span> on desktop.</p>
+
+          <div class="barWrap">
+            <div class="barTop">
+              <div>Tree Health</div>
+              <div><span id="healthText">100</span>%</div>
+            </div>
+            <div class="bar"><div class="fill" id="healthFill"></div></div>
+          </div>
+
+          <div class="arenaFooter">
+            <div class="smallStat">Trees eaten: <b id="treesEaten">0</b></div>
+            <div class="smallStat">Storm chance per tree: <b id="stormChance">3</b>%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footerNote">
+        The tree emoji chips away as you eat it. Upgrades help you bite harder, use tools, and hire helpers.
+      </div>
+    </div>
+
+    <!-- RIGHT: Upgrades -->
+    <div class="right">
+      <div class="card">
+        <div class="header">
+          <div class="title">
+            <h1>🛠️ Upgrades</h1>
+            <p class="sub">Spend points to increase bite speed or add passive eaters.</p>
+          </div>
+        </div>
+        <div class="section">
+          <h2>Shop</h2>
+          <div class="grid" id="shop"></div>
+        </div>
+        <div class="footerNote">
+          Prices go up each time you buy the same upgrade.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="header">
+          <div class="title">
+            <h1>📦 Inventory</h1>
+            <p class="sub">What you’ve bought so far.</p>
+          </div>
+        </div>
+        <div class="section">
+          <div class="grid" id="inv"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+
+<script>
+  // =====================
+  //  Game State
+  // =====================
+  let points = 0;
+  let treesEaten = 0;
+
+  // Tree health is in percent (0..100). You "eat" health down to 0.
+  let treeHealth = 100;
+
+  // Core rates
+  let bitePerSecond = 0.6;     // %/s while holding Bite
+  let flatBonusPerTick = 0.0;  // extra %/s while holding (from tools)
+  let passivePerSecond = 0.0;  // %/s always (from workers, etc)
+
+  // Thunderstorm chance per completed tree
+  let stormChance = 0.03;
+
+  // UI refs
+  const elPoints = document.getElementById('points');
+  const elTreesEaten = document.getElementById('treesEaten');
+  const elHealthText = document.getElementById('healthText');
+  const elHealthFill = document.getElementById('healthFill');
+  const elTree = document.getElementById('tree');
+  const elGuy = document.getElementById('guy');
+  const elStorm = document.getElementById('storm');
+  const elShop = document.getElementById('shop');
+  const elInv = document.getElementById('inv');
+  const elToasts = document.getElementById('toasts');
+  const elDps = document.getElementById('dps');
+  const elBps = document.getElementById('bps');
+
+  // Input
+  let biting = false;
+
+  // Tick
+  const TICK_MS = 50;
+  const TICK_S = TICK_MS / 1000;
+
+  // =====================
+  //  Tree Visual Stages
+  // =====================
+  const TREE_STAGES = [
+    { min: 75, emoji: '🌳' },
+    { min: 55, emoji: '🌲' },
+    { min: 40, emoji: '🌿' },
+    { min: 25, emoji: '🪵' },
+    { min: 10, emoji: '🪵' },
+    { min: 1,  emoji: '🪵' },
+    { min: 0,  emoji: '🪚✨' } // little fun "chips" moment at 0
+  ];
+
+  function treeEmojiForHealth(h){
+    for (const s of TREE_STAGES){
+      if (h >= s.min) return s.emoji;
+    }
+    return '🌳';
+  }
+
+  // =====================
+  //  Toasts
+  // =====================
+  function toast(msg){
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    elToasts.appendChild(t);
+    setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateY(8px)';
+      t.style.transition = 'opacity 220ms ease, transform 220ms ease';
+      setTimeout(() => t.remove(), 250);
+    }, 1800);
+  }
+
+  // =====================
+  //  Shop System
+  // =====================
+  const shopItems = [
+    {
+      id:'teeth',
+      icon:'🦷',
+      name:'Stronger Teeth',
+      desc:'+0.4%/s to Bite speed (while holding).',
+      baseCost: 2,
+      growth: 1.55,
+      onBuy: () => { bitePerSecond += 0.4; }
+    },
+    {
+      id:'axe',
+      icon:'🪓',
+      name:'Axe',
+      desc:'+1% per second *while biting* (like +1% per “click”, but for holding).',
+      baseCost: 5,
+      growth: 1.75,
+      onBuy: () => { flatBonusPerTick += 1.0; }
+    },
+    {
+      id:'gloves',
+      icon:'🧤',
+      name:'Grip Gloves',
+      desc:'+0.8%/s Bite speed (while holding).',
+      baseCost: 8,
+      growth: 1.6,
+      onBuy: () => { bitePerSecond += 0.8; }
+    },
+    {
+      id:'worker',
+      icon:'🧑‍🏭',
+      name:'Worker',
+      desc:'+1%/s passive eating (always).',
+      baseCost: 12,
+      growth: 1.7,
+      onBuy: () => { passivePerSecond += 1.0; }
+    },
+    {
+      id:'chainsaw',
+      icon:'🪚',
+      name:'Chainsaw',
+      desc:'+2.5%/s to Bite speed (while holding).',
+      baseCost: 25,
+      growth: 1.8,
+      onBuy: () => { bitePerSecond += 2.5; }
+    },
+    {
+      id:'woodchipper',
+      icon:'🧰',
+      name:'Tiny Woodchipper',
+      desc:'+4%/s passive eating (always).',
+      baseCost: 45,
+      growth: 1.85,
+      onBuy: () => { passivePerSecond += 4.0; }
+    },
+    {
+      id:'chef',
+      icon:'👨‍🍳',
+      name:'Forest Chef',
+      desc:'Bite feels “tastier”: +5% storm chance per tree (adds 0.5% absolute).',
+      baseCost: 60,
+      growth: 1.9,
+      onBuy: () => { stormChance = Math.min(0.20, stormChance + 0.005); }
+    },
+    {
+      id:'lumberbot',
+      icon:'🤖',
+      name:'Lumber Bot',
+      desc:'+10%/s passive eating (always).',
+      baseCost: 120,
+      growth: 2.0,
+      onBuy: () => { passivePerSecond += 10.0; }
+    },
+    {
+      id:'hyperteeth',
+      icon:'⚙️',
+      name:'Hyper Teeth',
+      desc:'+8%/s Bite speed (while holding).',
+      baseCost: 160,
+      growth: 2.05,
+      onBuy: () => { bitePerSecond += 8.0; }
+    },
+    {
+      id:'crew',
+      icon:'👷‍♀️👷‍♂️',
+      name:'Full Crew',
+      desc:'+25%/s passive eating (always).',
+      baseCost: 260,
+      growth: 2.1,
+      onBuy: () => { passivePerSecond += 25.0; }
+    },
+  ];
+
+  const owned = Object.fromEntries(shopItems.map(x => [x.id, 0]));
+
+  function costFor(item){
+    const n = owned[item.id] || 0;
+    return Math.ceil(item.baseCost * Math.pow(item.growth, n));
+  }
+
+  function buy(itemId){
+    const item = shopItems.find(x => x.id === itemId);
+    if (!item) return;
+    const cost = costFor(item);
+    if (points < cost) {
+      toast('Not enough points!');
+      return;
+    }
+    points -= cost;
+    owned[item.id] = (owned[item.id] || 0) + 1;
+    item.onBuy();
+    toast(`Bought ${item.icon} ${item.name}!`);
+    renderAll();
+  }
+
+  function renderShop(){
+    elShop.innerHTML = '';
+    for (const item of shopItems){
+      const cost = costFor(item);
+      const can = points >= cost;
+
+      const row = document.createElement('div');
+      row.className = 'upgrade';
+
+      const left = document.createElement('div');
+      left.className = 'uLeft';
+      left.innerHTML = `
+        <div class="uName">${item.icon} ${item.name}</div>
+        <div class="uDesc">${item.desc}</div>
+        <div class="uMeta">Owned: <b>${owned[item.id]}</b> • Cost: <b>${cost}</b></div>
+      `;
+
+      const btn = document.createElement('button');
+      btn.className = 'buy';
+      btn.textContent = `Buy (${cost})`;
+      btn.disabled = !can;
+      btn.onclick = () => buy(item.id);
+
+      row.appendChild(left);
+      row.appendChild(btn);
+      elShop.appendChild(row);
+    }
+  }
+
+  function renderInv(){
+    const entries = shopItems
+      .filter(i => (owned[i.id] || 0) > 0)
+      .map(i => ({
+        icon: i.icon,
+        name: i.name,
+        count: owned[i.id]
+      }));
+
+    if (entries.length === 0){
+      elInv.innerHTML = `<div class="upgrade"><div class="uLeft"><div class="uName">📭 Nothing yet</div><div class="uDesc">Buy an upgrade to see it here.</div></div></div>`;
+      return;
+    }
+
+    elInv.innerHTML = '';
+    for (const e of entries){
+      const row = document.createElement('div');
+      row.className = 'upgrade';
+      row.innerHTML = `
+        <div class="uLeft">
+          <div class="uName">${e.icon} ${e.name}</div>
+          <div class="uDesc">Owned: <b>${e.count}</b></div>
+        </div>
+        <div class="uMeta">✅</div>
+      `;
+      elInv.appendChild(row);
+    }
+  }
+
+  // =====================
+  //  Eating + Completion
+  // =====================
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+  function updateTreeVisual(){
+    elTree.textContent = treeEmojiForHealth(treeHealth);
+    elHealthText.textContent = Math.max(0, Math.round(treeHealth));
+    elHealthFill.style.width = clamp(treeHealth, 0, 100) + '%';
+
+    // Color shift as it gets lower
+    const pct = clamp(treeHealth, 0, 100) / 100;
+    // green -> amber -> red-ish
+    const hue = 120 * pct; // 120=green, 0=red
+    elHealthFill.style.background = `linear-gradient(90deg, hsl(${hue}, 70%, 45%), hsl(${Math.max(hue-10,0)}, 70%, 40%))`;
+  }
+
+  function setGuyEating(isEating){
+    if (isEating) elGuy.classList.add('chomp');
+    else elGuy.classList.remove('chomp');
+  }
+
+  function treeHitAnim(){
+    elTree.classList.remove('shake');
+    // force reflow
+    void elTree.offsetWidth;
+    elTree.classList.add('shake');
+  }
+
+  function stormAnim(){
+    elStorm.classList.add('on');
+    setTimeout(() => elStorm.classList.remove('on'), 600);
+  }
+
+  function completeTree(reason){
+    treesEaten += 1;
+    points += 1;
+
+    let bonus = 0;
+    if (Math.random() < stormChance){
+      bonus += 1;
+      points += 1;
+      stormAnim();
+      toast('⛈️ RARE STORM! Lightning burned the tree. +1 bonus point!');
+    }
+
+    if (reason === 'passive'){
+      toast(`Tree finished by helpers! +1 point${bonus?` (+${bonus} storm)`:''}`);
+    } else {
+      toast(`Tree eaten! +1 point${bonus?` (+${bonus} storm)`:''}`);
+    }
+
+    treeHealth = 100;
+    updateTreeVisual();
+    renderAll();
+  }
+
+  // =====================
+  //  Main Loop
+  // =====================
+  function renderAll(){
+    elPoints.textContent = points;
+    elTreesEaten.textContent = treesEaten;
+    document.getElementById('stormChance').textContent = Math.round(stormChance * 100);
+
+    // Stats
+    const biteRate = bitePerSecond + flatBonusPerTick;
+    const dps = passivePerSecond;
+    elBps.textContent = biteRate.toFixed(1);
+    elDps.textContent = dps.toFixed(1);
+
+    renderShop();
+    renderInv();
+  }
+
+  function tick(){
+    // Passive eating
+    if (passivePerSecond > 0 && treeHealth > 0){
+      treeHealth -= passivePerSecond * TICK_S;
+      if (treeHealth <= 0){
+        treeHealth = 0;
+        updateTreeVisual();
+        completeTree('passive');
+        return;
+      }
+    }
+
+    // Active biting
+    if (biting && treeHealth > 0){
+      const biteRate = (bitePerSecond + flatBonusPerTick);
+      treeHealth -= biteRate * TICK_S;
+      if (treeHealth <= 0){
+        treeHealth = 0;
+        treeHitAnim();
+        updateTreeVisual();
+        completeTree('bite');
+        return;
+      }
+      treeHitAnim();
+    }
+
+    updateTreeVisual();
+  }
+
+  setInterval(tick, TICK_MS);
+
+  // =====================
+  //  Controls
+  // =====================
+  const biteBtn = document.getElementById('biteBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function startBite(){
+    biting = true;
+    setGuyEating(true);
+  }
+  function stopBite(){
+    biting = false;
+    setGuyEating(false);
+  }
+
+  biteBtn.addEventListener('mousedown', startBite);
+  biteBtn.addEventListener('mouseup', stopBite);
+  biteBtn.addEventListener('mouseleave', stopBite);
+  biteBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startBite(); }, {passive:false});
+  biteBtn.addEventListener('touchend', stopBite);
+
+  // Spacebar hold
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (!biting) startBite();
+    }
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      stopBite();
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    points = 0;
+    treesEaten = 0;
+    treeHealth = 100;
+    bitePerSecond = 0.6;
+    flatBonusPerTick = 0.0;
+    passivePerSecond = 0.0;
+    stormChance = 0.03;
+    for (const k of Object.keys(owned)) owned[k] = 0;
+    stopBite();
+    updateTreeVisual();
+    renderAll();
+    toast('Reset! Back to one hungry human.');
+  });
+
+  // =====================
+  //  Init
+  // =====================
+  updateTreeVisual();
+  renderAll();
+</script>
+
+</body>
+</html>
 
