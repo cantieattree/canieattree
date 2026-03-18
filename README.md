@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Can I Eat Tree?</title>
   <style>
+    
     :root{
       --bg1:#0ea5e9;
       --bg2:#22c55e;
@@ -15,7 +16,9 @@
       --shadow: 0 16px 40px rgba(0,0,0,0.15);
       --radius: 18px;
     }
+    
     *{box-sizing:border-box}
+    
     body{
       margin:0;
       min-height:100vh;
@@ -28,7 +31,7 @@
       justify-content:center;
       padding:24px;
     }
-
+    
     .wrap{
       width:min(980px, 100%);
       display:grid;
